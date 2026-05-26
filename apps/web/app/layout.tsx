@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+/** DB-backed marketplace — skip static prerender at build (Vercel needs runtime DATABASE_URL). */
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "SportsHire — sports jobs but make it AI",
   description:

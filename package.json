@@ -6,7 +6,8 @@
     "packages/*"
   ],
   "scripts": {
-    "postinstall": "npm run build --workspace=@sportshire/shared && npm run build --workspace=@sportshire/services",
+    "postinstall": "npm run db:generate && npm run build --workspace=@sportshire/shared && npm run build --workspace=@sportshire/services",
+    "vercel-build": "npm run db:generate && npm run build --workspace=@sportshire/web",
     "dev": "npm run dev --workspace=@sportshire/web",
     "dev:mcp": "npm run dev --workspace=@sportshire/mcp-server",
     "build": "npm run build --workspace=@sportshire/shared && npm run build --workspaces --if-present",
