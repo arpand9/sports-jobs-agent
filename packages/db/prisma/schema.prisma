@@ -1,0 +1,198 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  seeker
+  employer
+  admin
+}
+
+enum RemotePreference {
+  remote_only
+  hybrid
+  on_site
+  flexible
+}
+
+enum RemoteOption {
+  remote_only
+  hybrid
+  on_site
+}
+
+enum JobType {
+  full_time
+  part_time
+  internship
+  contract
+  seasonal
+}
+
+enum SalaryType {
+  annual
+  hourly
+  stipend
+}
+
+enum JobStatus {
+  draft
+  active
+  paused
+  closed
+  filled
+}
+
+enum MatchStatus {
+  matched
+  employer_viewed
+  employer_shortlisted
+  employer_rejected
+  seeker_interested
+  seeker_declined
+  interview_scheduled
+  hired
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         UserRole
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  seekerProfile   SeekerProfile?
+  employerProfile EmployerProfile?
+  apiKeys         ApiKey[]
+
+  @@map("users")
+}
+
+model SeekerProfile {
+  id                       String           @id @default(uuid())
+  userId                   String           @unique @map("user_id")
+  fullName                 String           @map("full_name")
+  headline                 String?
+  location                 String?
+  willingToRelocate        Boolean          @default(false) @map("willing_to_relocate")
+  remotePreference         RemotePreference @default(flexible) @map("remote_preference")
+  summary                  String?
+  yearsExperience          Int?             @map("years_experience")
+  sports                   Json             @default("[]")
+  skills                   Json             @default("[]")
+  jobTypes                 Json             @default("[]") @map("job_types")
+  desiredRoles             Json             @default("[]") @map("desired_roles")
+  desiredSalaryMin         Int?             @map("desired_salary_min")
+  desiredSalaryMax         Int?             @map("desired_salary_max")
+  experience               Json             @default("[]")
+  education                Json             @default("[]")
+  certifications           Json             @default("[]")
+  portfolioUrl             String?          @map("portfolio_url")
+  linkedinUrl              String?          @map("linkedin_url")
+  profileCompletenessScore Float            @default(0) @map("profile_completeness_score")
+  lastActiveAt             DateTime?        @map("last_active_at")
+  isSearchable             Boolean          @default(true) @map("is_searchable")
+  createdAt                DateTime         @default(now()) @map("created_at")
+  updatedAt                DateTime         @updatedAt @map("updated_at")
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  matchResults MatchResult[]
+
+  @@index([location])
+  @@index([yearsExperience])
+  @@map("seeker_profiles")
+}
+
+model EmployerProfile {
+  id                 String   @id @default(uuid())
+  userId             String   @unique @map("user_id")
+  organizationName   String   @map("organization_name")
+  orgType            String?  @map("org_type")
+  sport              String?
+  league             String?
+  location           String?
+  website            String?
+  description        String?
+  employeeCountRange String?  @map("employee_count_range")
+  verified           Boolean  @default(false)
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobPostings JobPosting[]
+
+  @@map("employer_profiles")
+}
+
+model JobPosting {
+  id                  String       @id @default(uuid())
+  employerId          String       @map("employer_id")
+  title               String
+  description         String
+  sport               String?
+  location            String?
+  remoteOption        RemoteOption @default(on_site) @map("remote_option")
+  jobType             JobType      @map("job_type")
+  salaryMin           Int?         @map("salary_min")
+  salaryMax           Int?         @map("salary_max")
+  salaryType          SalaryType   @default(annual) @map("salary_type")
+  applicationDeadline DateTime?    @map("application_deadline") @db.Date
+  startDate           DateTime?    @map("start_date") @db.Date
+  externalApplyUrl    String?      @map("external_apply_url")
+  scoringCriteria     Json         @map("scoring_criteria")
+  status              JobStatus    @default(draft)
+  createdAt           DateTime     @default(now()) @map("created_at")
+  updatedAt           DateTime     @updatedAt @map("updated_at")
+
+  employer     EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  matchResults MatchResult[]
+
+  @@index([sport])
+  @@index([jobType])
+  @@index([status])
+  @@index([location])
+  @@map("job_postings")
+}
+
+model MatchResult {
+  id              String      @id @default(uuid())
+  jobId           String      @map("job_id")
+  seekerId        String      @map("seeker_id")
+  totalScore      Float       @map("total_score")
+  scoreBreakdown  Json        @map("score_breakdown")
+  status          MatchStatus @default(matched)
+  matchedAt       DateTime    @default(now()) @map("matched_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  job    JobPosting    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  seeker SeekerProfile @relation(fields: [seekerId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, seekerId])
+  @@index([jobId])
+  @@index([seekerId])
+  @@index([totalScore(sort: Desc)])
+  @@map("match_results")
+}
+
+model ApiKey {
+  id               String    @id @default(uuid())
+  userId           String    @map("user_id")
+  keyHash          String    @map("key_hash")
+  keyPrefix        String    @map("key_prefix")
+  name             String?
+  permissions      Json      @default("[\"read\"]")
+  rateLimitPerHour Int       @default(100) @map("rate_limit_per_hour")
+  lastUsedAt       DateTime? @map("last_used_at")
+  expiresAt        DateTime? @map("expires_at")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("api_keys")
+}

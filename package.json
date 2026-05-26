@@ -1,0 +1,24 @@
+{
+  "name": "sportshire",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "postinstall": "npm run build --workspace=@sportshire/shared && npm run build --workspace=@sportshire/services",
+    "dev": "npm run dev --workspace=@sportshire/web",
+    "dev:mcp": "npm run dev --workspace=@sportshire/mcp-server",
+    "build": "npm run build --workspace=@sportshire/shared && npm run build --workspaces --if-present",
+    "db:generate": "npm run generate --workspace=@sportshire/db",
+    "db:migrate": "npm run migrate --workspace=@sportshire/db",
+    "db:push": "npm run push --workspace=@sportshire/db",
+    "db:seed": "npm run seed --workspace=@sportshire/db",
+    "db:convert-jobs": "npm run convert-jobs --workspace=@sportshire/db",
+    "docker:up": "docker compose up -d postgres",
+    "setup": "npm install && npm run db:generate && npm run docker:up && sleep 3 && npm run db:push && npm run db:convert-jobs && npm run db:seed"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

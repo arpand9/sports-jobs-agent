@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "sportshire": {
+      "command": "npx",
+      "args": ["tsx", "apps/mcp-server/src/index.ts"],
+      "cwd": "/Users/arpand/Documents/Code-Experiments/sports-jobs-agent",
+      "env": {
+        "DATABASE_URL": "postgresql://sportshire:sportshire@localhost:5432/sportshire",
+        "SPORTSHIRE_API_KEY": "sh_demo_sportshire_arpand9",
+        "SPORTSHIRE_SKIP_AUTH": "1"
+      }
+    }
+  }
+}
