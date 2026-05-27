@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-// Prisma client is generated at repo root node_modules
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
@@ -9,8 +8,7 @@ export const prisma =
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
 
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
-}
+// Reuse one client per serverless instance (required on Vercel + Neon pooler)
+globalForPrisma.prisma = prisma;
 
 export * from "@prisma/client";

@@ -4,6 +4,7 @@ const path = require("path");
 const nextConfig = {
   transpilePackages: ["@sportshire/db", "@sportshire/shared", "@sportshire/services"],
   outputFileTracingRoot: path.join(__dirname, "../.."),
+  serverExternalPackages: ["@prisma/client", "@prisma/engines"],
 };
 
 module.exports = nextConfig;
