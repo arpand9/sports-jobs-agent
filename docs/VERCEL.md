@@ -32,17 +32,18 @@ SPORTSHIRE_SKIP_AUTH=1
 NEXTAUTH_URL=https://your-app.vercel.app
 ```
 
-## Database (not included on Vercel)
+## Database (Neon via Vercel Marketplace)
 
-Use **Neon**, **Supabase**, or **Vercel Postgres**. After first deploy:
+Provisioned as **sportshire-db** (Neon, `iad1`, free plan). `DATABASE_URL` is auto-injected on Production + Preview.
+
+To re-seed production from your machine:
 
 ```bash
-# From your machine, with production DATABASE_URL
-npm run db:push
-npm run db:seed
+npx vercel env pull .env.production.local --environment=production --yes
+set -a && source .env.production.local && set +a
+npm run db:push && npm run db:seed
+npx vercel deploy --prod --yes
 ```
-
-Without a seeded Postgres, the site **builds** but API/pages return DB errors at runtime.
 
 ## What deploys
 
