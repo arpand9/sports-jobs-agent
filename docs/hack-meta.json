@@ -4,6 +4,6 @@
   "displayName": "Arpan D",
   "videoUrl": "https://www.loom.com/share/f5ca7af0a83b4494ab1aacd5d4b3eeed",
   "repoUrl": "https://github.com/arpand9/sports-jobs-agent",
-  "deployedUrl": "",
+  "deployedUrl": "https://sports-jobs-agent.vercel.app",
   "tags": ["sports", "mcp", "jobs", "ai-agents", "matching", "boston", "hackathon"]
 }

@@ -4,13 +4,19 @@
 
 | Setting | Value |
 |---------|--------|
-| **Root Directory** | `apps/web` |
-| **Framework** | Next.js (auto) |
-| **Install Command** | *(from `apps/web/vercel.json`)* `cd ../.. && npm install` |
-| **Build Command** | *(from `apps/web/vercel.json`)* `cd ../.. && npm run vercel-build` |
+| **Root Directory** | `.` (repository root — required for npm workspaces) |
+| **Framework** | Next.js |
+| **Install Command** | `npm install` (from root `vercel.json`) |
+| **Build Command** | `npm run vercel-build` |
 | **Node.js** | 20.x |
 
-`apps/web/vercel.json` is committed — Vercel picks it up when root is `apps/web`.
+Deploy from the **repo root**, not `apps/web`, so all workspace packages are included.
+
+```bash
+cd sports-jobs-agent
+npx vercel link
+npx vercel deploy --prod
+```
 
 ## Required environment variables
 
